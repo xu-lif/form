@@ -20,11 +20,12 @@ const FormFiled = ({ children, label, name }) => {
   });
 
   useEffect(() => {
-    subscribe((key) => {
+    const cancelSubscribe = subscribe((key) => {
       if (key === name) {
         setUpdate(values[name]);
       }
     });
+    return () => cancelSubscribe();
   }, []);
 
   return (

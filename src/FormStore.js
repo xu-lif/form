@@ -68,6 +68,20 @@ class FormStore {
     if (typeof listener === "function") {
       this.listeners.push(listener);
     }
+    return () => {
+      this.cancelSubscribe(listener);
+    };
+  };
+
+  // 取消订阅
+  cancelSubscribe = (listener) => {
+    const lists = [];
+    this.listeners.forEach((val) => {
+      if (val !== listener) {
+        lists.push(val);
+      }
+    });
+    this.listener = lists;
   };
   // 通知表单更新数据
   notify = (key) => {
