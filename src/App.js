@@ -3,11 +3,14 @@ import Form from "./Form";
 import FormStore from "./FormStore";
 import FormFiled from "./FormField";
 
+import { useEffect, useRef } from "react";
+
 export default function App() {
+  const formRef = useRef();
   const store = new FormStore(
     {
       name: "张三",
-      age: 28
+      age: 10
     },
     {
       name: {
@@ -21,20 +24,28 @@ export default function App() {
     }
   );
 
-  const handleSubmit = (data) => {
-    console.log("formData", data);
+  const handleSubmit = () => {
+    console.log("submit data", formRef.current.getValues());
   };
+
+  const formHandleSubmit = (data) => {
+    console.log("data", data);
+  };
+
+  useEffect(() => {
+    console.log("form instance", formRef.current);
+  }, []);
   return (
     <div className="App">
-      <Form onSubmit={handleSubmit} store={store}>
+      <Form onSubmit={formHandleSubmit} store={store} ref={formRef}>
         <FormFiled name="name" label="名称: ">
           <input placeholder="其功能输入" />
         </FormFiled>
         <FormFiled name="age" label="年龄: ">
           <input placeholder="输入2" />
         </FormFiled>
-        <button>保存</button>
       </Form>
+      <button onClick={handleSubmit}>保存</button>
     </div>
   );
 }

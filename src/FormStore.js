@@ -21,6 +21,7 @@ class FormStore {
     this.errors = {};
     this.listeners = [];
     this.initValues = _.cloneDeep(initStore);
+    this.validateValues();
   }
   // 获取数据
   getValues = (key) => {
@@ -43,23 +44,34 @@ class FormStore {
     // 通知更新
     this.notify(key);
   };
+
+  // 验证所有values
+  validateValues = () => {
+    // 表单field所有value验证
+    Object.keys(this.values).forEach((key) => {
+      this.validateValue(key, this.values[key]);
+    });
+  };
+
   // 验证数据
   validateValue = (key, value) => {
     const statusObj = {
       status: true
     };
-    if (this.rules[key] && typeof this.rules[key].rule === "function") {
-      const status = this.rules[key].rule(value);
-      if (!status) {
-        statusObj.status = false;
-        statusObj.errMsg = this.rules[key].msg;
+    if (key && value) {
+      // 单个表单field验证
+      if (this.rules[key] && typeof this.rules[key].rule === "function") {
+        const status = this.rules[key].rule(value);
+        if (!status) {
+          statusObj.status = false;
+          statusObj.errMsg = this.rules[key].msg;
+        }
       }
-    }
-
-    if (!statusObj.status) {
-      this.errors[key] = statusObj.errMsg;
-    } else {
-      this.errors[key] = "";
+      if (!statusObj.status) {
+        this.errors[key] = statusObj.errMsg;
+      } else {
+        this.errors[key] = "";
+      }
     }
   };
 
@@ -88,6 +100,17 @@ class FormStore {
     this.listeners.forEach((listenerVal) => {
       listenerVal(key);
     });
+  };
+  // 重置数据
+  reset = () => {
+    this.values = this.initValues;
+    this.notify("*");
+  };
+  // 设置初始化的值
+  setInitValues = (data) => {
+    this.values = data;
+    this.initValues = _.cloneDeep(data);
+    this.notify("*");
   };
 }
 
